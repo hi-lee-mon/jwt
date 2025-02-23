@@ -13,7 +13,7 @@
     "fix:eslint": "npm run lint:eslint -- --fix",
     "fix:prettier": "npm run lint:prettier -- --write",
     "prepare": "husky install",
-    "prisma:mig": "npx prisma migrate dev",
+    "prisma:migen": "npx prisma migrate dev && pnpm run prisma:gen",
     "prisma:gen": "npx prisma generate",
     "prisma:stu": "npx prisma studio"
   },

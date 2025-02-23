@@ -8,6 +8,7 @@ import jwt from 'jsonwebtoken'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 const AUTH_SECRET = process.env.AUTH_SECRET!
+const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET!
 
 export async function login(_: FormState, formData: FormData) {
   try {
@@ -29,14 +30,35 @@ export async function login(_: FormState, formData: FormData) {
       return { message: 'パスワードが間違っています' }
     }
 
-    const token = jwt.sign({ id: user.id, email: user.email }, AUTH_SECRET, {
-      expiresIn: '1h', // 有効期限1時間
+    // リフレッシュトークン（長期間有効）
+    const refreshToken = jwt.sign({ id: user.id }, REFRESH_TOKEN_SECRET, {
+      expiresIn: '7d', // 7日間有効
+    })
+    // アクセストークン(短期間有効)
+    const accessToken = jwt.sign(
+      { id: user.id, email: user.email },
+      AUTH_SECRET,
+      {
+        expiresIn: '1m',
+      },
+    )
+
+    // リフレッシュトークンをデータベースに保存
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { refreshToken },
     })
 
-    cookies().set('token', token, {
+    cookies().set('accessToken', accessToken, {
       httpOnly: true,
       secure: true,
-      maxAge: 60 * 60, // 1時間
+      maxAge: 10, // 60秒
+    })
+
+    cookies().set('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: true,
+      maxAge: 60 * 60 * 24 * 7, // 7日間
     })
   } catch (error) {
     if (error instanceof PrismaClientKnownRequestError) {

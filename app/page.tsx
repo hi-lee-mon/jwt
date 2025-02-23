@@ -1,11 +1,12 @@
 import { getUser, logout } from '@/app/actions'
+import FetchForm from '@/app/fetch-form'
 import { prisma } from '@/util/prisma'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 
 export default async function Home() {
   const cookieStore = cookies()
-  const token = cookieStore.get('token')
+  const token = cookieStore.get('accessToken')
 
   if (!token) {
     redirect('/auth/signup')
@@ -30,6 +31,7 @@ export default async function Home() {
           ログアウト
         </button>
       </form>
+      <FetchForm />
     </div>
   )
 }
