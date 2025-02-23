@@ -18,7 +18,7 @@ export default async function Home() {
   return (
     <div>
       <h1 className="text-2xl font-bold">ユーザ一覧</h1>
-      <p>{`ユーザID：${myProfile.id} がログインしています`}</p>
+      <p>{`ユーザID:${myProfile.id} がログインしています`}</p>
 
       <ul>
         {users.map((user) => (
