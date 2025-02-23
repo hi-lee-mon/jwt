@@ -12,15 +12,21 @@
     "fix": "run-s fix:prettier fix:eslint",
     "fix:eslint": "npm run lint:eslint -- --fix",
     "fix:prettier": "npm run lint:prettier -- --write",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "prisma:mig": "npx prisma migrate dev",
+    "prisma:gen": "npx prisma generate",
+    "prisma:stu": "npx prisma studio"
   },
   "dependencies": {
     "@prisma/client": "6.4.1",
+    "bcryptjs": "^3.0.2",
+    "jsonwebtoken": "^9.0.2",
     "next": "14.2.23",
     "react": "^18",
     "react-dom": "^18"
   },
   "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
