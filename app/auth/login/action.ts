@@ -9,25 +9,26 @@ import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 const AUTH_SECRET = process.env.AUTH_SECRET!
 
-export async function signup(_: FormState, formData: FormData) {
+export async function login(_: FormState, formData: FormData) {
   try {
     const email = formData.get('email') as string
     const password = formData.get('password') as string
-    const name = formData.get('name') as string
 
-    // パスワードをハッシュ化
-    const hashedPassword = await bcrypt.hash(password, 10)
-
-    // ユーザー作成
-    const user = await prisma.user.create({
-      data: {
+    const user = await prisma.user.findUnique({
+      where: {
         email,
-        password: hashedPassword,
-        name,
       },
     })
 
-    // JWT 発行
+    if (!user) {
+      return { message: 'ユーザーが見つかりません' }
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password)
+    if (!isPasswordValid) {
+      return { message: 'パスワードが間違っています' }
+    }
+
     const token = jwt.sign({ id: user.id, email: user.email }, AUTH_SECRET, {
       expiresIn: '1h', // 有効期限1時間
     })
